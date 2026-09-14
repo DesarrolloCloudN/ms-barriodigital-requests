@@ -17,25 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Endpoints internos (sin seguridad propia, ver sección 3 del contrato) de gestión de trámites.
- * Consumidos únicamente por ms-barriodigital-bff.
- */
-// Controller: es la puerta de entrada HTTP. Recibe las peticiones y le pasa
-// el trabajo al TramiteService, que tiene la lógica de verdad.
+/** Endpoints internos de gestión de trámites, consumidos por ms-barriodigital-bff. */
 @RestController
 @RequestMapping("/api/requests")
 public class TramiteController {
 
 	private final TramiteService tramiteService;
 
-	// Spring inyecta automáticamente el service por el constructor.
 	public TramiteController(TramiteService tramiteService) {
 		this.tramiteService = tramiteService;
 	}
 
-	// GET /api/requests -> lista todos los trámites, o solo los de un vecino
-	// si viene el parámetro vecinoId en la URL.
 	@GetMapping
 	public List<TramiteResponse> listar(@RequestParam(required = false) String vecinoId) {
 		return tramiteService.listar(vecinoId).stream()
@@ -43,23 +35,18 @@ public class TramiteController {
 				.toList();
 	}
 
-	// GET /api/requests/{id} -> devuelve un solo trámite buscado por su id.
 	@GetMapping("/{id}")
 	public TramiteResponse obtener(@PathVariable Long id) {
 		return TramiteResponse.from(tramiteService.obtener(id));
 	}
 
-	// POST /api/requests -> crea un trámite nuevo (queda en estado INGRESADO).
-	// Devuelve HTTP 201 (CREATED) cuando sale bien.
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public TramiteResponse crear(@RequestBody TramiteCrearRequest request) {
 		return TramiteResponse.from(tramiteService.crear(request));
 	}
 
-	// PUT /api/requests/{id}/estado -> cambia el estado de un trámite (por
-	// ejemplo de INGRESADO a ADMITIDO). El service valida que el cambio sea
-	// válido según la máquina de estados.
+	// La validación de la transición de estado la hace el service.
 	@PutMapping("/{id}/estado")
 	public TramiteResponse cambiarEstado(@PathVariable Long id, @RequestBody TramiteEstadoRequest request) {
 		return TramiteResponse.from(tramiteService.cambiarEstado(id, request));

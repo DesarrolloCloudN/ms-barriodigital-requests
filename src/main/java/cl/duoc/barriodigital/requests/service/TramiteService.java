@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// Service: acá vive la lógica de negocio de los trámites (crear, listar,
-// cambiar de estado). El controller solo delega el trabajo a esta clase.
+// Lógica de negocio de los trámites; el controller solo delega aquí.
 @Service
 public class TramiteService {
 
@@ -23,8 +22,7 @@ public class TramiteService {
 		this.tramiteRepository = tramiteRepository;
 	}
 
-	// Si viene un vecinoId, filtra los trámites de ese vecino. Si no viene
-	// (o viene vacío), devuelve todos los trámites.
+	// Si viene vecinoId filtra por ese vecino; si no, devuelve todos.
 	public List<Tramite> listar(String vecinoId) {
 		if (vecinoId != null && !vecinoId.isBlank()) {
 			return tramiteRepository.findByVecinoId(vecinoId);
@@ -32,16 +30,11 @@ public class TramiteService {
 		return tramiteRepository.findAll();
 	}
 
-	// Busca un trámite por id. Si no existe, lanza una excepción que más
-	// adelante el GlobalExceptionHandler convierte en un HTTP 404.
 	public Tramite obtener(Long id) {
 		return tramiteRepository.findById(id)
 				.orElseThrow(() -> new TramiteNoEncontradoException("No existe un trámite con id " + id));
 	}
 
-	// Crea un trámite nuevo a partir de los datos que llegaron en el
-	// request. El constructor de Tramite ya se encarga de dejarlo en
-	// estado INGRESADO.
 	public Tramite crear(TramiteCrearRequest request) {
 		Tramite tramite = new Tramite(
 				request.tipoTramiteId(),
@@ -52,10 +45,7 @@ public class TramiteService {
 		return tramiteRepository.save(tramite);
 	}
 
-	// Cambia el estado de un trámite existente. Antes de guardar el cambio,
-	// revisamos que la transición sea válida (por ejemplo, no se puede
-	// pasar de INGRESADO directo a RESUELTO). Si no es válida, se lanza
-	// EstadoInvalidoException y no se guarda nada.
+	// Valida que la transición sea permitida antes de guardar el cambio.
 	public Tramite cambiarEstado(Long id, TramiteEstadoRequest request) {
 		Tramite tramite = obtener(id);
 		EstadoTramite nuevoEstado = parsearEstado(request.estado());
@@ -66,10 +56,9 @@ public class TramiteService {
 		}
 
 		tramite.setEstado(nuevoEstado);
-		// El funcionario y las observaciones son opcionales: solo se
-		// actualizan si vinieron en el request.
-		if (request.funcionarioAsignado() != null) {
-			tramite.setFuncionarioAsignado(request.funcionarioAsignado());
+		// El responsable y las observaciones son opcionales: solo se actualizan si vienen.
+		if (request.responsableAsignado() != null) {
+			tramite.setResponsableAsignado(request.responsableAsignado());
 		}
 		if (request.observaciones() != null) {
 			tramite.setObservaciones(request.observaciones());
@@ -79,9 +68,7 @@ public class TramiteService {
 		return tramiteRepository.save(tramite);
 	}
 
-	// Convierte el texto del estado (por ejemplo "ADMITIDO") en el valor
-	// del enum EstadoTramite. Si viene vacío o no coincide con ningún
-	// estado válido, se lanza EstadoInvalidoException.
+	// Convierte el texto a EstadoTramite; si es inválido lanza la excepción.
 	private EstadoTramite parsearEstado(String estado) {
 		if (estado == null || estado.isBlank()) {
 			throw new EstadoInvalidoException("El campo 'estado' es obligatorio");

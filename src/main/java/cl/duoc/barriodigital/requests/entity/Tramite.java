@@ -11,15 +11,11 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-// Representa un trámite que ingresó un vecino. Va cambiando de estado a
-// medida que el funcionario lo va gestionando (ver EstadoTramite para la
-// máquina de estados). @Entity + @Table le dicen a JPA que esta clase se
-// guarda en la tabla TRAMITES de la base de datos.
+// Trámite de un vecino; su estado cambia según la máquina de EstadoTramite.
 @Entity
 @Table(name = "TRAMITES")
 public class Tramite {
 
-	// Id autogenerado por la base de datos (autoincremental).
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -28,7 +24,6 @@ public class Tramite {
 	@Column(name = "TIPO_TRAMITE_ID", nullable = false)
 	private Long tipoTramiteId;
 
-	// Datos del vecino que hizo el trámite.
 	@Column(name = "VECINO_ID", nullable = false)
 	private String vecinoId;
 
@@ -38,18 +33,14 @@ public class Tramite {
 	@Column(name = "DESCRIPCION", length = 2000, nullable = false)
 	private String descripcion;
 
-	// Estado actual del trámite dentro de la máquina de estados.
-	// @Enumerated(EnumType.STRING) hace que se guarde como texto (por
-	// ejemplo "INGRESADO") en vez de un número, para que sea más legible.
+	// Se guarda como texto (STRING) para que sea legible en la BD.
 	@Enumerated(EnumType.STRING)
 	@Column(name = "ESTADO", nullable = false)
 	private EstadoTramite estado;
 
-	// Funcionario que quedó a cargo del trámite (puede ser null al inicio).
-	@Column(name = "FUNCIONARIO_ASIGNADO")
-	private String funcionarioAsignado;
+	@Column(name = "RESPONSABLE_ASIGNADO")
+	private String responsableAsignado;
 
-	// Notas u observaciones que se van agregando durante la gestión.
 	@Column(name = "OBSERVACIONES", length = 2000)
 	private String observaciones;
 
@@ -59,15 +50,11 @@ public class Tramite {
 	@Column(name = "FECHA_ACTUALIZACION", nullable = false)
 	private LocalDateTime fechaActualizacion;
 
-	// Constructor vacío que pide JPA internamente para poder crear los
-	// objetos cuando lee desde la base de datos. No se usa directamente.
+	// Constructor vacío que exige JPA; no se usa directamente en el código.
 	protected Tramite() {
-		// requerido por JPA
 	}
 
-	// Constructor que se usa al crear un trámite nuevo. Siempre arranca en
-	// estado INGRESADO y con la fecha de ingreso/actualización en el momento
-	// en que se crea.
+	// Al crear un trámite queda en estado INGRESADO con la fecha actual.
 	public Tramite(Long tipoTramiteId, String vecinoId, String vecinoNombre, String descripcion) {
 		this.tipoTramiteId = tipoTramiteId;
 		this.vecinoId = vecinoId;
@@ -127,12 +114,12 @@ public class Tramite {
 		this.estado = estado;
 	}
 
-	public String getFuncionarioAsignado() {
-		return funcionarioAsignado;
+	public String getResponsableAsignado() {
+		return responsableAsignado;
 	}
 
-	public void setFuncionarioAsignado(String funcionarioAsignado) {
-		this.funcionarioAsignado = funcionarioAsignado;
+	public void setResponsableAsignado(String responsableAsignado) {
+		this.responsableAsignado = responsableAsignado;
 	}
 
 	public String getObservaciones() {

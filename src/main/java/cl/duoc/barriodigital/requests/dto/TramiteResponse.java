@@ -4,8 +4,7 @@ import cl.duoc.barriodigital.requests.entity.Tramite;
 
 import java.time.LocalDateTime;
 
-// DTO que se devuelve al cliente (el bff) cuando se consulta o se modifica
-// un trámite. Se usa en vez de exponer la entidad Tramite directamente.
+// DTO de respuesta hacia el bff; evita exponer la entidad Tramite directamente.
 public record TramiteResponse(
 		Long id,
 		Long tipoTramiteId,
@@ -13,14 +12,12 @@ public record TramiteResponse(
 		String vecinoNombre,
 		String descripcion,
 		String estado,
-		String funcionarioAsignado,
+		String responsableAsignado,
 		String observaciones,
 		LocalDateTime fechaIngreso,
 		LocalDateTime fechaActualizacion
 ) {
 
-	// Convierte una entidad Tramite (la que se guarda en la base de datos)
-	// en un TramiteResponse (lo que se manda como respuesta HTTP).
 	public static TramiteResponse from(Tramite tramite) {
 		return new TramiteResponse(
 				tramite.getId(),
@@ -29,7 +26,7 @@ public record TramiteResponse(
 				tramite.getVecinoNombre(),
 				tramite.getDescripcion(),
 				tramite.getEstado().name(),
-				tramite.getFuncionarioAsignado(),
+				tramite.getResponsableAsignado(),
 				tramite.getObservaciones(),
 				tramite.getFechaIngreso(),
 				tramite.getFechaActualizacion()
