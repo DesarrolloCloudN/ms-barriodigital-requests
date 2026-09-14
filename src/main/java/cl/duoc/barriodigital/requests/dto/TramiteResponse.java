@@ -12,7 +12,7 @@ public record TramiteResponse(
 		String vecinoNombre,
 		String descripcion,
 		String estado,
-		String responsableAsignado,
+		String funcionarioAsignado,
 		String observaciones,
 		LocalDateTime fechaIngreso,
 		LocalDateTime fechaActualizacion
@@ -26,7 +26,7 @@ public record TramiteResponse(
 				tramite.getVecinoNombre(),
 				tramite.getDescripcion(),
 				tramite.getEstado().name(),
-				tramite.getResponsableAsignado(),
+				tramite.getFuncionarioAsignado(),
 				tramite.getObservaciones(),
 				tramite.getFechaIngreso(),
 				tramite.getFechaActualizacion()

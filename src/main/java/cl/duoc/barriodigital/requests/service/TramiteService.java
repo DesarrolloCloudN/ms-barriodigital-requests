@@ -56,9 +56,9 @@ public class TramiteService {
 		}
 
 		tramite.setEstado(nuevoEstado);
-		// El responsable y las observaciones son opcionales: solo se actualizan si vienen.
-		if (request.responsableAsignado() != null) {
-			tramite.setResponsableAsignado(request.responsableAsignado());
+		// Funcionario y observaciones son opcionales: solo se actualizan si vienen.
+		if (request.funcionarioAsignado() != null) {
+			tramite.setFuncionarioAsignado(request.funcionarioAsignado());
 		}
 		if (request.observaciones() != null) {
 			tramite.setObservaciones(request.observaciones());

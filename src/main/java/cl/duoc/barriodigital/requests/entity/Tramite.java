@@ -38,8 +38,8 @@ public class Tramite {
 	@Column(name = "ESTADO", nullable = false)
 	private EstadoTramite estado;
 
-	@Column(name = "RESPONSABLE_ASIGNADO")
-	private String responsableAsignado;
+	@Column(name = "FUNCIONARIO_ASIGNADO")
+	private String funcionarioAsignado;
 
 	@Column(name = "OBSERVACIONES", length = 2000)
 	private String observaciones;
@@ -114,12 +114,12 @@ public class Tramite {
 		this.estado = estado;
 	}
 
-	public String getResponsableAsignado() {
-		return responsableAsignado;
+	public String getFuncionarioAsignado() {
+		return funcionarioAsignado;
 	}
 
-	public void setResponsableAsignado(String responsableAsignado) {
-		this.responsableAsignado = responsableAsignado;
+	public void setFuncionarioAsignado(String funcionarioAsignado) {
+		this.funcionarioAsignado = funcionarioAsignado;
 	}
 
 	public String getObservaciones() {

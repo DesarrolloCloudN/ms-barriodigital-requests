@@ -14,7 +14,7 @@ public enum EstadoTramite {
 			return EnumSet.of(ADMITIDO, RECHAZADO);
 		}
 	},
-	// Aceptado por un administrador: pasa a gestión o se rechaza.
+	// Aceptado por un funcionario: pasa a gestión o se rechaza.
 	ADMITIDO {
 		@Override
 		public Set<EstadoTramite> siguientesValidos() {
