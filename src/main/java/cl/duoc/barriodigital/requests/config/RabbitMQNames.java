@@ -14,7 +14,9 @@ public final class RabbitMQNames {
 	public static final String QUEUE_EMAIL = "q.cmd.email";
 	public static final String QUEUE_EMAIL_DLQ = "q.cmd.email.dlq";
 	public static final String ROUTING_KEY_EMAIL = "email.send";
-	public static final String ROUTING_KEY_EMAIL_TOPIC = "email.send.final";
+	// email.* solo matchea routing keys de exactamente 2 segmentos (ver BINDING_PATTERN_EMAIL),
+	// por eso NO puede ser "email.send.final" (3 segmentos): no llegaría a ninguna cola.
+	public static final String ROUTING_KEY_EMAIL_TOPIC = "email.final";
 	public static final String BINDING_PATTERN_EMAIL = "email.*";
 
 	public static final String QUEUE_CREW = "q.cmd.crew";
