@@ -6,6 +6,7 @@ import cl.duoc.barriodigital.requests.entity.EstadoTramite;
 import cl.duoc.barriodigital.requests.entity.Tramite;
 import cl.duoc.barriodigital.requests.exception.EstadoInvalidoException;
 import cl.duoc.barriodigital.requests.exception.TramiteNoEncontradoException;
+import cl.duoc.barriodigital.requests.messaging.NotificacionPublisher;
 import cl.duoc.barriodigital.requests.repository.TramiteRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,11 @@ import java.util.List;
 public class TramiteService {
 
 	private final TramiteRepository tramiteRepository;
+	private final NotificacionPublisher notificacionPublisher;
 
-	public TramiteService(TramiteRepository tramiteRepository) {
+	public TramiteService(TramiteRepository tramiteRepository, NotificacionPublisher notificacionPublisher) {
 		this.tramiteRepository = tramiteRepository;
+		this.notificacionPublisher = notificacionPublisher;
 	}
 
 	// Si viene vecinoId filtra por ese vecino; si no, devuelve todos.
@@ -42,7 +45,9 @@ public class TramiteService {
 				request.vecinoNombre(),
 				request.descripcion()
 		);
-		return tramiteRepository.save(tramite);
+		tramite = tramiteRepository.save(tramite);
+		notificacionPublisher.publicarIngreso(tramite);
+		return tramite;
 	}
 
 	// Valida que la transición sea permitida antes de guardar el cambio.
@@ -64,8 +69,15 @@ public class TramiteService {
 			tramite.setObservaciones(request.observaciones());
 		}
 		tramite.setFechaActualizacion(LocalDateTime.now());
+		tramite = tramiteRepository.save(tramite);
 
-		return tramiteRepository.save(tramite);
+		if (nuevoEstado == EstadoTramite.EN_TERRENO) {
+			notificacionPublisher.publicarVisitaTerreno(tramite);
+		} else if (nuevoEstado == EstadoTramite.RESUELTO || nuevoEstado == EstadoTramite.RECHAZADO) {
+			notificacionPublisher.publicarResolucion(tramite);
+		}
+
+		return tramite;
 	}
 
 	// Convierte el texto a EstadoTramite; si es inválido lanza la excepción.
